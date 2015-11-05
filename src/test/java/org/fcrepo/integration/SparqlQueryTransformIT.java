@@ -23,6 +23,7 @@ import org.fcrepo.kernel.api.services.ContainerService;
 import org.fcrepo.kernel.api.utils.iterators.RdfStream;
 import org.fcrepo.kernel.modeshape.rdf.impl.DefaultIdentifierTranslator;
 import org.fcrepo.kernel.modeshape.rdf.impl.PropertiesRdfContext;
+import org.fcrepo.kernel.modeshape.rdf.impl.TypeRdfContext;
 import org.fcrepo.transform.transformations.SparqlQueryTransform;
 
 import org.junit.Test;
@@ -43,6 +44,7 @@ import java.io.InputStream;
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static org.fcrepo.kernel.api.RdfLexicon.REPOSITORY_NAMESPACE;
+import static org.fcrepo.kernel.api.RdfLexicon.RDF_NAMESPACE;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -68,19 +70,19 @@ public class SparqlQueryTransformIT extends AbstractResourceIT {
     private SparqlQueryTransform testObj;
 
     @Test
-    public void testQueryPrimaryType() throws RepositoryException, IOException {
+    public void testQueryRdfType() throws RepositoryException, IOException {
         final Session session = repo.login();
         try {
             final Container object = containerService.findOrCreate(session, "/testObject-" + randomUUID());
 
             final String s = "SELECT ?x ?type\n" +
-                    "WHERE { ?x  <" + REPOSITORY_NAMESPACE + "primaryType> ?type }";
+                    "WHERE { ?x  <" + RDF_NAMESPACE + "type> ?type }";
             try (final InputStream stringReader = new ByteArrayInputStream(s.getBytes())) {
 
                 testObj = new SparqlQueryTransform(stringReader);
 
                 final RdfStream stream = object.getTriples(new DefaultIdentifierTranslator(session),
-                        PropertiesRdfContext.class);
+                        TypeRdfContext.class);
                 try (final QueryExecution qexec = testObj.apply(stream)) {
                     final ResultSet results = requireNonNull(qexec).execSelect();
                     assertTrue(requireNonNull(results).hasNext());
