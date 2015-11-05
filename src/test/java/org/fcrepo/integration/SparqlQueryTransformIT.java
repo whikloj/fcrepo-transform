@@ -44,7 +44,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
 import static org.fcrepo.kernel.api.RdfLexicon.REPOSITORY_NAMESPACE;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -68,7 +67,7 @@ public class SparqlQueryTransformIT extends AbstractResourceIT {
     private SparqlQueryTransform testObj;
 
     @Test
-    public void testQueryPrimaryType() throws RepositoryException, IOException {
+    public void testQueryNoPrimaryType() throws RepositoryException, IOException {
         final Session session = repo.login();
         try {
             final Container object = containerService.findOrCreate(session, "/testObject-" + randomUUID());
@@ -83,7 +82,7 @@ public class SparqlQueryTransformIT extends AbstractResourceIT {
                         PropertiesRdfContext.class);
                 try (final QueryExecution qexec = testObj.apply(stream)) {
                     final ResultSet results = requireNonNull(qexec).execSelect();
-                    assertTrue(requireNonNull(results).hasNext());
+                    assertFalse(requireNonNull(results).hasNext());
                 }
             }
         } finally {
