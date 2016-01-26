@@ -12,6 +12,7 @@
 hs_err_pid*
 
 target/
+fcrepo4-data/
 .classpath
 .project
-
+*~
