@@ -18,6 +18,8 @@ package org.fcrepo.integration;
 import static java.util.UUID.randomUUID;
 import static org.fcrepo.transform.transformations.LDPathTransform.APPLICATION_RDF_LDPATH;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,6 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.util.EntityUtils;
+import org.fcrepo.transform.http.responses.JsonObjectProvider;
 import org.junit.Test;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
@@ -48,6 +51,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class FedoraTransformIT extends AbstractResourceIT {
 
+    // This regex represents the following pattern: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
+    //  see: JsonObjectProvider.DATE_FORMAT
+    private final String DATE_TIME_REGEX = "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z";
+
     @Test
     public void testLdpathWithConfiguredProgram() throws IOException {
 
@@ -64,6 +71,14 @@ public class FedoraTransformIT extends AbstractResourceIT {
 
         assertEquals("Failed to retrieve correct identifier in JSON!", serverAddress + "/" + pid,
                 rootNode.get(0).get("id").elements().next().asText());
+
+        final JsonNode creationDateJson = rootNode.get(0).get("created");
+        assertNotNull(creationDateJson);
+
+        final JsonNode dateNode = creationDateJson.get(0);
+        assertNotNull(dateNode);
+        assertTrue(dateNode.asText() + " should be of format: " + DATE_TIME_REGEX,
+                dateNode.asText().matches(DATE_TIME_REGEX));
 
     }
 
