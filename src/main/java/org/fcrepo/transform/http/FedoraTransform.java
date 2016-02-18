@@ -55,7 +55,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.fcrepo.http.api.ContentExposingResource;
 import org.fcrepo.kernel.api.models.FedoraResource;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
 import org.fcrepo.transform.TransformationFactory;
 import org.jvnet.hk2.annotations.Optional;
 import org.modeshape.jcr.api.JcrTools;
@@ -151,10 +150,7 @@ public class FedoraTransform extends ContentExposingResource {
             throws RepositoryException {
         LOGGER.info("GET transform, '{}', for '{}'", program, externalPath);
 
-        final RdfStream rdfStream = getResourceTriples().session(session)
-                .topic(translator().reverse().convert(resource()).asNode());
-
-        return getNodeTypeTransform(resource().getNode(), program).apply(rdfStream);
+        return getNodeTypeTransform(resource().getNode(), program).apply(getResourceTriples());
 
     }
 
@@ -180,10 +176,7 @@ public class FedoraTransform extends ContentExposingResource {
         }
         LOGGER.info("POST transform for '{}'", externalPath);
 
-        final RdfStream rdfStream = getResourceTriples().session(session)
-                .topic(translator().reverse().convert(resource()).asNode());
-
-        return transformationFactory.getTransform(contentType, requestBodyStream).apply(rdfStream);
+        return transformationFactory.getTransform(contentType, requestBodyStream).apply(getResourceTriples());
 
     }
 

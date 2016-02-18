@@ -15,10 +15,17 @@
  */
 package org.fcrepo.transform.http;
 
+import static com.hp.hpl.jena.graph.NodeFactory.createURI;
+import static java.util.stream.Stream.empty;
 import static org.apache.jena.riot.WebContent.contentTypeSPARQLQuery;
+import static org.fcrepo.kernel.api.RdfContext.LDP_CONTAINMENT;
+import static org.fcrepo.kernel.api.RdfContext.LDP_MEMBERSHIP;
+import static org.fcrepo.kernel.api.RdfContext.PROPERTIES;
+import static org.fcrepo.kernel.api.RdfContext.SERVER_MANAGED;
 import static org.fcrepo.http.commons.test.util.TestHelpers.getUriInfoImpl;
 import static org.fcrepo.http.commons.test.util.TestHelpers.mockSession;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -28,15 +35,19 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.EnumSet;
 
 import javax.jcr.Node;
 import javax.jcr.Session;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import com.hp.hpl.jena.graph.Triple;
+import org.fcrepo.kernel.api.RdfContext;
+import org.fcrepo.kernel.api.RdfStream;
 import org.fcrepo.kernel.api.identifiers.IdentifierConverter;
+import org.fcrepo.kernel.api.rdf.DefaultRdfStream;
 import org.fcrepo.kernel.api.services.NodeService;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
 import org.fcrepo.kernel.modeshape.FedoraResourceImpl;
 import org.fcrepo.transform.Transformation;
 import org.fcrepo.transform.TransformationFactory;
@@ -92,8 +103,18 @@ public class FedoraTransformTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testEvaluateTransform() {
-        final RdfStream stream = new RdfStream();
-        when(mockResource.getTriples(any(IdentifierConverter.class), any(Class.class))).thenReturn(stream);
+
+        when(mockResource.getTriples(any(IdentifierConverter.class), eq(PROPERTIES)))
+            .thenReturn(new DefaultRdfStream(createURI("abc"), empty()));
+
+        when(mockResource.getTriples(any(IdentifierConverter.class), eq(SERVER_MANAGED)))
+            .thenReturn(new DefaultRdfStream(createURI("abc"), empty()));
+
+        when(mockResource.getTriples(any(IdentifierConverter.class), eq(LDP_MEMBERSHIP)))
+            .thenReturn(new DefaultRdfStream(createURI("abc"), empty()));
+
+        when(mockResource.getTriples(any(IdentifierConverter.class), eq(LDP_CONTAINMENT)))
+            .thenReturn(new DefaultRdfStream(createURI("abc"), empty()));
 
         final InputStream query = new ByteArrayInputStream(("SELECT ?title WHERE\n" +
                 "{\n" +

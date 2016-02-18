@@ -15,7 +15,7 @@
  */
 package org.fcrepo.transform;
 
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
+import org.fcrepo.kernel.api.RdfStream;
 
 import java.util.function.Function;
 
