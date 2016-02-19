@@ -15,6 +15,8 @@
  */
 package org.fcrepo.transform.transformations;
 
+import static org.fcrepo.kernel.api.RdfCollectors.toModel;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -22,7 +24,7 @@ import com.hp.hpl.jena.query.QueryFactory;
 import com.hp.hpl.jena.rdf.model.Model;
 
 import org.apache.commons.io.IOUtils;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
+import org.fcrepo.kernel.api.RdfStream;
 import org.fcrepo.transform.Transformation;
 
 import java.io.IOException;
@@ -51,7 +53,7 @@ public class SparqlQueryTransform implements Transformation<QueryExecution> {
     public QueryExecution apply(final RdfStream rdfStream) {
 
         try {
-            final Model model = rdfStream.asModel();
+            final Model model = rdfStream.collect(toModel());
             final Query sparqlQuery =
                 QueryFactory.create(IOUtils.toString(query));
 

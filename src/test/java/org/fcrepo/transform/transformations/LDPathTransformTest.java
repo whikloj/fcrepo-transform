@@ -16,8 +16,9 @@
 package org.fcrepo.transform.transformations;
 
 import static com.hp.hpl.jena.graph.NodeFactory.createLiteral;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createProperty;
-import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
+import static com.hp.hpl.jena.graph.NodeFactory.createURI;
+import static com.hp.hpl.jena.graph.Triple.create;
+import static java.util.stream.Stream.of;
 import static org.fcrepo.transform.transformations.LDPathTransform.CONFIGURATION_FOLDER;
 import static org.fcrepo.transform.transformations.LDPathTransform.getNodeTypeTransform;
 import static org.junit.Assert.assertEquals;
@@ -39,8 +40,8 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NodeType;
 import javax.ws.rs.WebApplicationException;
 
-import com.hp.hpl.jena.graph.Triple;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
+import org.fcrepo.kernel.api.RdfStream;
+import org.fcrepo.kernel.api.rdf.DefaultRdfStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -134,11 +135,10 @@ public class LDPathTransformTest {
     @Test
     public void testProgramQuery() {
 
-        final RdfStream rdfStream = new RdfStream();
-        rdfStream.concat(new Triple(createResource("abc").asNode(),
-                createProperty("http://purl.org/dc/elements/1.1/title").asNode(),
-                createLiteral("some-title")));
-        rdfStream.topic(createResource("abc").asNode());
+        final RdfStream rdfStream = new DefaultRdfStream(createURI("abc"), of(
+                create(createURI("abc"),
+                        createURI("http://purl.org/dc/elements/1.1/title"),
+                        createLiteral("some-title"))));
         final InputStream testReader = new ByteArrayInputStream("title = dc:title :: xsd:string ;".getBytes());
 
         testObj = new LDPathTransform(testReader);

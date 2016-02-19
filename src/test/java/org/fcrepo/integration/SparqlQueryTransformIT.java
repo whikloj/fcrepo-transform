@@ -18,9 +18,9 @@ package org.fcrepo.integration;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
 
+import org.fcrepo.kernel.api.RdfStream;
 import org.fcrepo.kernel.api.models.Container;
 import org.fcrepo.kernel.api.services.ContainerService;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
 import org.fcrepo.kernel.modeshape.rdf.impl.DefaultIdentifierTranslator;
 import org.fcrepo.kernel.modeshape.rdf.impl.PropertiesRdfContext;
 import org.fcrepo.kernel.modeshape.rdf.impl.TypeRdfContext;
@@ -41,8 +41,10 @@ import javax.jcr.Session;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
+import static org.fcrepo.kernel.api.RdfContext.PROPERTIES;
 import static org.fcrepo.kernel.api.RdfLexicon.REPOSITORY_NAMESPACE;
 import static org.fcrepo.kernel.api.RdfLexicon.RDF_NAMESPACE;
 import static org.junit.Assert.assertFalse;
@@ -82,7 +84,7 @@ public class SparqlQueryTransformIT extends AbstractResourceIT {
                 testObj = new SparqlQueryTransform(stringReader);
 
                 final RdfStream stream = object.getTriples(new DefaultIdentifierTranslator(session),
-                        TypeRdfContext.class);
+                        PROPERTIES);
                 try (final QueryExecution qexec = testObj.apply(stream)) {
                     final ResultSet results = requireNonNull(qexec).execSelect();
                     assertTrue(requireNonNull(results).hasNext());
@@ -106,7 +108,7 @@ public class SparqlQueryTransformIT extends AbstractResourceIT {
                 testObj = new SparqlQueryTransform(stringReader);
 
                 final RdfStream stream = object.getTriples(new DefaultIdentifierTranslator(session),
-                        PropertiesRdfContext.class);
+                        PROPERTIES);
                 try (final QueryExecution qexec = testObj.apply(stream)) {
                     final ResultSet results = requireNonNull(qexec).execSelect();
                     assertFalse(requireNonNull(results).hasNext());

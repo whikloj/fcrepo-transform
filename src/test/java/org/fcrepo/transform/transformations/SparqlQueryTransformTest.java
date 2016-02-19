@@ -15,10 +15,10 @@
  */
 package org.fcrepo.transform.transformations;
 
-import com.hp.hpl.jena.graph.Triple;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.ResultSet;
-import org.fcrepo.kernel.api.utils.iterators.RdfStream;
+import org.fcrepo.kernel.api.RdfStream;
+import org.fcrepo.kernel.api.rdf.DefaultRdfStream;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -32,10 +32,15 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static com.hp.hpl.jena.graph.NodeFactory.createLiteral;
+import static com.hp.hpl.jena.graph.NodeFactory.createURI;
+import static com.hp.hpl.jena.graph.Triple.create;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createProperty;
 import static com.hp.hpl.jena.rdf.model.ResourceFactory.createResource;
+import static java.util.stream.Stream.of;
+import static org.fcrepo.kernel.api.RdfCollectors.toModel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -65,10 +70,10 @@ public class SparqlQueryTransformTest {
 
     @Test
     public void testApply() {
-        final RdfStream model = new RdfStream();
-        model.concat(new Triple(createResource("http://example.org/book/book1").asNode(),
-                createProperty("http://purl.org/dc/elements/1.1/title").asNode(),
-                createLiteral("some-title")));
+        final RdfStream model = new DefaultRdfStream(createURI("ttp://example.org/book/book1"), of(
+                    create(createResource("http://example.org/book/book1").asNode(),
+                        createProperty("http://purl.org/dc/elements/1.1/title").asNode(),
+                        createLiteral("some-title"))));
         final InputStream query = new ByteArrayInputStream(("SELECT ?title WHERE\n" +
                 "{\n" +
                 "  <http://example.org/book/book1> <http://purl.org/dc/elements/1.1/title> ?title .\n" +
@@ -87,7 +92,7 @@ public class SparqlQueryTransformTest {
     public void testApplyException() {
         final RdfStream model = mock(RdfStream.class);
         testObj = new SparqlQueryTransform(null);
-        doThrow(IOException.class).when(model).asModel();
+        doThrow(IOException.class).when(model).collect(any());
         testObj.apply(model);
     }
 }
