@@ -44,7 +44,7 @@ import java.io.InputStream;
 
 import static java.util.Objects.requireNonNull;
 import static java.util.UUID.randomUUID;
-import static org.fcrepo.kernel.api.RdfContext.PROPERTIES;
+import static org.fcrepo.kernel.api.RequiredRdfContext.PROPERTIES;
 import static org.fcrepo.kernel.api.RdfLexicon.REPOSITORY_NAMESPACE;
 import static org.fcrepo.kernel.api.RdfLexicon.RDF_NAMESPACE;
 import static org.junit.Assert.assertFalse;
