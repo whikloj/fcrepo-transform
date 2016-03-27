@@ -9,7 +9,7 @@
 /*
  * Any Fedora resource.
  */
-[fedora:Configuration] > nt:folder
+[fedora:Configuration] > nt:folder, mix:referenceable
 
-[fedora:NodeTypeConfiguration] > nt:folder
+[fedora:NodeTypeConfiguration] > nt:folder, mix:referenceable
 
