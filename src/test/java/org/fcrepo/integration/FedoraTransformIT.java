@@ -116,17 +116,18 @@ public class FedoraTransformIT extends AbstractResourceIT {
 
     @Test
     public void testMakeReferenceToTransformSpace() throws IOException {
-        final String pid = UUID.randomUUID().toString();
-        createObject(pid);
+        final String generateTransformSpace = UUID.randomUUID().toString();
+        createObject(generateTransformSpace);
 
-        final HttpGet getTransformRequest = new HttpGet(serverAddress + "/" + pid + "/fcr:transform/default");
+        final HttpGet getTransformRequest =
+                new HttpGet(serverAddress + "/" + generateTransformSpace + "/fcr:transform/default");
         try (final CloseableHttpResponse getResponse = (CloseableHttpResponse) client.execute(getTransformRequest)) {
             assertEquals("Can't get default transform", OK.getStatusCode(),
                     getResponse.getStatusLine().getStatusCode());
         }
 
-        final String pid2 = UUID.randomUUID().toString();
-        final HttpPut putReferenceRequest = new HttpPut(serverAddress + "/" + pid2);
+        final String pointsAtTransformSpace = UUID.randomUUID().toString();
+        final HttpPut putReferenceRequest = new HttpPut(serverAddress + "/" + pointsAtTransformSpace);
 
         final InputStream turtleFile = this.getClass().getResourceAsStream("/referenceTest.ttl");
         final InputStreamEntity entity = new InputStreamEntity(turtleFile);
